@@ -1,0 +1,143 @@
+---
+title: Predicting the winner in CS:GO matches
+subtitle: "(STATS/CSE 780 course project)"
+author: Yan Min  \hspace{5in} Department of Electrical and Computer Engineering \hspace{5in} McMaster University \hspace{5in}400546093
+date: "2023/12/05"
+format: beamer
+editor: visual
+execute: 
+  echo: true
+  message: false
+  warning: false
+header-includes:
+   - \usepackage{amsmath}
+   - \usepackage{bbm}
+   - \newcommand{\vx}{\mbox{\boldmath{$x$}}}
+   - \newcommand{\vy}{\mbox{\boldmath{$y$}}}
+   - \newcommand{\vY}{\mbox{\boldmath{$Y$}}}
+   - \newcommand{\vbeta}{\mbox{\boldmath{$\beta$}}}
+   - \newcommand{\mX}{\mbox{\textbf{X}}}
+   - \newcommand{\vmu}{\mbox{\boldmath{$\mu$}}}
+   - \newcommand{\rc}{\color{red}}
+   - \newcommand{\bc}{\color{black}}
+   - \newcommand{\blc}{\color{blue}}
+   - \newcommand{\gc}{\color{green}}
+   - \definecolor{applegreen}{rgb}{0.55, 0.71, 0.0}
+   - \newcommand{\ag}{\color{applegreen}} 
+   - \definecolor{cadetblue}{rgb}{0.37, 0.62, 0.63}
+   - \definecolor{burntumber}{rgb}{0.54, 0.2, 0.14}
+   - \DeclareMathOperator*{\E}{\mathbb{E}}
+   - \DeclareMathOperator*{\V}{\mathbb{V}}
+bibliography: project.bib
+nocite: | 
+  [@citeR]
+  [@xie2020r]
+  [@wickham2016r]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.width = 9,
+  message=FALSE, 
+  warning=FALSE)
+
+```
+
+
+## Outline
+
+- Motivation
+- EDA
+- Methods
+  - Random Forest
+  - DNN
+- Results
+- Discussion
+
+
+## Motivation
+
+- Try to predict the winner in a match
+- Growing interest in eSports.
+- Develop an advanced predictive Model basd on past data 
+
+
+## Data
+
+- The dataset[@Skybox] was originally published by Skybox as part of their CS:GO AI Challenge, running from Spring to Fall 2020. 
+- 122410 entries and 97 colums
+  - dtypes: bool(1), float64(94), object(2)
+  - $n>p$
+- Results of EDA
+  - Winnner: CT(60004), T(62406)
+  - No null values
+  - Scaling and PCA
+- Feature selection
+- Spliting
+  - Train/test datasets(test_size=0.3)
+
+
+## Data
+
+
+```{r}
+#| fig-align: 'center'
+#| out-width: '45%'
+#| echo: false
+knitr::include_graphics("corr.png")
+```
+
+```{r}
+#| fig-align: 'center'
+#| out-width: '45%'
+#| echo: false
+#| fig-cap: "Correlation Matrix and Feature Importance"
+knitr::include_graphics("feature.png")
+```
+
+
+## Methods
+- Random forest
+  - Classification(CT/T)
+  - PCA
+- DNN
+  - Suitable for large datasets
+  - `n_layers = 4`
+  - `n_nodes = 300`
+  - `epochs = 28/50`
+
+## Results
+- Random forest
+  - Accuracy: 0.753
+- DNN
+  - Accuracy: 0.743
+
+## Discussion
+
+- The two accuracies are close.
+- Features on health are more important.
+- We can use this to predict the winner in today's matches.
+- Game updates can significantly impact performance.
+- Random forest:
+  - Overfitting? `0.781`
+  - GridSearch? It takes resources.
+  - more interpretable
+- DNN
+  - Compared to RM, more suitable for large datasets
+  - less interpretable
+
+
+
+##
+
+  \begin{center}
+			\textbf{{\LARGE Thank You!}}
+		\end{center}
+		
+
+
+
+## References 
+
+
