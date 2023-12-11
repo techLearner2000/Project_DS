@@ -1,0 +1,16 @@
+min_sample_split: 8
+best_score; 0.761
+
+Best Parameter: {'min_samples_split': 8}
+Best Score: 0.7610839218434446
+
+Loss: 0.4652: The loss function quantifies how well the model is performing. 
+    A lower loss indicates better performance. 
+    The value 0.4652 is the average loss over the training dataset during this epoch.
+
+Accuracy: 0.7418: 
+This is the classification accuracy of the model on the training dataset. 
+It means that approximately 74.18% of the predictions made by the model were correct.
+
+abstract
+15 pages including tables, pictures
