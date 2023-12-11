@@ -8,7 +8,7 @@ editor: visual
 header-includes:
    - \usepackage{amsmath}
    - \usepackage{float}
-bibliography: /Users/minyan/Documents/stats780/Project_DS/project.bib
+bibliography: ./project.bib
 fontsize: 11pt
 geometry: 
   - margin = 1in
@@ -42,13 +42,26 @@ There are totally 122410 entries and 97 colums in this dataset. The features hav
 
 ## Methods
 
-Firstly, we plot the correlation matrix heatmap for the dataset to inspect the variables' mutual relationships. Secondly, we check whether there are missing values. Thirdly, we handle the ouliers by substitute them into `.95` quantile. Fourthly, we separate the original dataset into the training set and test set and the proportion is `0.7`.
+Firstly, we will do Exploratory Data Analysis(EDA) to find out the relationships among different features. Then, we will drop unnessaray columns and transform the values of some features based on the analysis. Afterwards, we will do scaling. 
 
-Then, we will use feature selection to find the best-suited predictors, since the number of variables is big, up to 95. We will select Forward stepwise selection (FSS) algorithm or hybrid approaches to select features. Then, we will use logistic regression and random forest classifier to build the models. During the modeling process, there may exist circumstances in which we need to do parameter tuning. We will change the size of the training dataset to find the best prediction result. Since the results of prediction is binary, either bankrupt or not, it's easy to interpret the predictive results. We will use the ROC curve to find the best cutoff.
+The reasons for choosing random forest are that it can capture the complex interactions and non-linear relationships among the features, and that it is suitable for classification problems(`CT` or `T`). For the model of random forest, beforing fitting the data, we do the principal component analysis(PCA) for the features. Regarding to the tuning of the parameters, we do grid searching to find the best parameters for the model and the best accuracy score. Then we use the training dataset to check whether the model is overfitting and the test dataset to get the accuracy score. 
 
-After training the models, we will use the testing set to make prediction and then compare to the real values. We will caculate the accuracies for different models and compare them.
+The reasons for choosing deep neural network(DNN) are that it suits for large datasets, which in this case consists of `122410` entries, and that we can benefit from the trained model for future use. For the model of DNN, we set the number of layers as `4`, the number of nodes of each layer as `300`, and the number of epochs as `50`. Between each layer, we also add batch normalization layers, in order to normalize the activations. We choose the binary cross entropy as the loss function and the `Nadam` as the optimizer. Then we build the DNN model and render the accuracy scores for the training set and test set.
 
 ## Results
+
+As there are 97 variables in this dataset, we need to decrease the number of features in order to reduce the training time. As we can see, over eighty features are about how much of each weapon is left in the game and we can know that these features are high correlated about `ct_money` and `t_money`. So we drop them off and select 15 of them. Then we draw the correlation matrix of the selected features. From figure \ref{figure2}, we can tell that `ct_players_alive` is high correlated with `ct_health`, and `t_players_alive` is highly correlated with `t_money`. So we drop off the colomns of `ct_players_alive` and `t_players_alive`. Then we can use the left 13 features as inputs and `round_winner` as outputs. To do the prediction, in the colomn of `round_winner`, we convert `CT` to `0`, and `T` to `1`.
+
+For the column of `bomb_planted`, at first, the values are boolean types and we convert `true` to `1` and `false` to `0`. For others features, we do data scaling. After this, we divide the dataset into training set and test set, according to the test size of `0.3`.
+
+```{=tex}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width = 0.45\textwidth]{corr.png}
+  \caption{The correlation matrix of selected features}
+  \label{figure2}
+\end{figure}
+```
 
 There are 6819 instances and 96 features in this dataset. The fist one, `Bankrupt?`, is categorical, either `1` or `0`. The other 95 variables are numeric. Figure \ref{figure1} shows how these variables distribute. Some of them are left skewed and I will standardize them.
 
