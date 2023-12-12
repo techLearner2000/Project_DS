@@ -50,9 +50,9 @@ The reasons for choosing deep neural network(DNN) are that it suits for large da
 
 ## Results
 
-As there are 97 variables in this dataset, we need to decrease the number of features in order to reduce the training time. As we can see, over eighty features are about how much of each weapon is left in the game and we can know that these features are high correlated about `ct_money` and `t_money`. So we drop them off and select 15 of them. Then we draw the correlation matrix of the selected features. From figure \ref{figure2}, we can tell that `ct_players_alive` is high correlated with `ct_health`, and `t_players_alive` is highly correlated with `t_money`. So we drop off the colomns of `ct_players_alive` and `t_players_alive`. Then we can use the left 13 features as inputs and `round_winner` as outputs. To do the prediction, in the colomn of `round_winner`, we convert `CT` to `0`, and `T` to `1`.
+Fistly, we do feature selection. As there are 97 variables in this dataset, we need to decrease the number of features in order to reduce the training time. As we can see, over eighty features are about how much of each weapon is left in the game and we can know that these features are high correlated about `ct_money` and `t_money`. So we drop them off and select 15 of them. Then we draw the correlation matrix of the selected features. From figure \ref{figure2}, we can tell that `ct_players_alive` is high correlated with `ct_health`, and `t_players_alive` is highly correlated with `t_money`. So we drop off the colomns of `ct_players_alive` and `t_players_alive`. Then we can use the left 13 features as inputs and `round_winner` as outputs. To do the prediction, in the colomn of `round_winner`, we convert `CT` to `0`, and `T` to `1`.
 
-For the column of `bomb_planted`, at first, the values are boolean types and we convert `true` to `1` and `false` to `0`. For others features, we do data scaling. After this, we divide the dataset into training set and test set, according to the test size of `0.3`.
+For the column of `bomb_planted`, at first, the values are boolean types and we convert `true` to `1` and `false` to `0`. For others features, we do data scaling. For the column of `round_winner`, the number of `CT` and the number of `T` are close to `50%` of the total entries. So we can directly split the dataset. After this, we divide the dataset into training set and test set, according to the test size of `0.3`.
 
 ```{=tex}
 \begin{figure}[H]
@@ -63,15 +63,28 @@ For the column of `bomb_planted`, at first, the values are boolean types and we 
 \end{figure}
 ```
 
-There are 6819 instances and 96 features in this dataset. The fist one, `Bankrupt?`, is categorical, either `1` or `0`. The other 95 variables are numeric. Figure \ref{figure1} shows how these variables distribute. Some of them are left skewed and I will standardize them.
-
 ```{=tex}
 \begin{figure}[H]
   \centering
   \includegraphics[width = 0.45\textwidth]{feature.png}
-  \caption{The distribution of all the variables}
-  \label{figure1}
+  \caption{The Feature Importance Derived from the Random Forest Model}
+  \label{figure3}
 \end{figure}
+
+From the model of random forest, we can obtain the feature importance, as figure ref{figure3} shows. We can see that `t_score` is the most important among all features, following by `ct_score`. We can see that the scores of both team make the impact on final prediction.
+
+```{tex}
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+& \textbf{Column 1} & \textbf{Column 2} \\ \hline
+\textbf{Row 1} & Data 1 & Data 2 \\ \hline
+\textbf{Row 2} & Data 3 & Data 4 \\ \hline
+\end{tabular}
+\caption{Table with X and Y Axis Labels}
+\label{tab:my_label}
+\end{table}
 ```
 
 ## Conclusion
