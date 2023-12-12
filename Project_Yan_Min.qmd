@@ -70,22 +70,25 @@ For the column of `bomb_planted`, at first, the values are boolean types and we 
   \caption{The Feature Importance Derived from the Random Forest Model}
   \label{figure3}
 \end{figure}
+```
 
-From the model of random forest, we can obtain the feature importance, as figure ref{figure3} shows. We can see that `t_score` is the most important among all features, following by `ct_score`. We can see that the scores of both team make the impact on final prediction.
+Deriving from grid searching, we have that the best parameter for `min_samples_split` is `8`. We can obtain feature importance from the Random Forest mode, as figure ref{figure3} shows. We can see that `t_score` is the most important among all features, following by `ct_score`. We can also see that the scores of both team make the biggest impact on final results, as the scores may impact each team's morale. As table \ref{t} shows, the accuracy score for the training set is `0.791`, which is accepetable since it's not overfitting, and the accuracy score for the test set is `0.764`, which is pretty good for prediction. Plus, the F1 score of the random forest model is `0.765`, which indicates a good balance between precision and recall in the model's predictions. In a real game, this accuracy is significant in predicting the outcome of the game. 
 
-```{tex}
+```{=tex}
 \begin{table}[h]
-\centering
-\begin{tabular}{|c|c|c|}
-\hline
-& \textbf{Column 1} & \textbf{Column 2} \\ \hline
-\textbf{Row 1} & Data 1 & Data 2 \\ \hline
-\textbf{Row 2} & Data 3 & Data 4 \\ \hline
-\end{tabular}
-\caption{Table with X and Y Axis Labels}
-\label{tab:my_label}
+  \centering
+  \begin{tabular}{|c|c|c|}
+  \hline
+  & \textbf{Random Forest} & \textbf{DNN} \\ \hline
+  \textbf{Accuracy for Test Set} & 0.764 & 0.752 \\ \hline
+  \textbf{Accuracy for Train Set} & 0.791 & 0.453 \\ \hline
+  \end{tabular}
+  \caption{Accuracies for both models}
+  \label{t}
 \end{table}
 ```
+
+For the DNN model, the accuracy on the test set is 0.752, while on the training set, it is 0.453. There is no strong sign of overfitting.  
 
 ## Conclusion
 
