@@ -82,19 +82,211 @@ Deriving from grid searching, we have that the best parameter for `min_samples_s
   & \textbf{Random Forest} & \textbf{DNN} \\ \hline
   \textbf{Accuracy for Test Set} & 0.764 & 0.752 \\ \hline
   \textbf{Accuracy for Training Set} & 0.791 & 0.453 \\ \hline
+  \textbf{F1 Score} & 0.764 & 0.767 \\ \hline
   \end{tabular}
-  \caption{Accuracies for both models}
+  \caption{Accuracies and f1 scores for both models}
   \label{t}
 \end{table}
 ```
 
-For the DNN model, the accuracy on the test set is 0.752, while on the training set, it is 0.453. There is no strong sign of overfitting.  
+For the DNN model, the accuracy on the test set is 0.752, while on the training set, it is 0.453. There is no strong sign of overfitting. And the F1 score is 0.767, which indicates a strong balance for precison and recall in this model. The results from the DNN model are promising and could significantly benefit team strategies. 
 
 ## Conclusion
+
+From the results, we can conclude that both models are suitable for predicting the winners trained on this dataset. And the accuracy scores for two models are close, but the random forest model are bad at overfitting compared to DNN model in this case. But random forest model can give us some valuable insights on the feature importance. We obtain that we should pay more attention on scores and health points during the games. So the team can try different strategies based on this. Besides, game updates can significantly impact the performance of the models. But to DNN, DNN can keep learning the new features or new values so that it can predict the winner well even in new versions of CS:GO matches. To be specificly, we can use the techniques of transfer learning, using the weight matrice obtained from the previous model and use it as initial weight matrices for the DNN model.
 
 \clearpage
 
 ## Supplementary material
+
+1. Import the libraries
+```{python}
+#| output: false
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import preprocessing
+from sklearn.model_selection import train_test_split
+import seaborn as sns
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report,accuracy_score
+from sklearn.neural_network import MLPClassifier
+from sklearn.preprocessing import scale 
+```
+
+2. Read the datasets
+```{python}
+#| output: calse
+df = pd.read_csv('./csgo_round_snapshots.csv')
+df.info()
+
+df.isnull().sum()
+
+df['round_winner'] = df['round_winner'].apply(lambda x: 1 if x == 'CT' else 0)
+print(df['round_winner'].value_counts())
+
+sns.countplot(x='round_winner', data=df)
+```
+
+3. Data preprocessing
+```{python}
+#| output: false
+df['bomb_planted'] = df['bomb_planted'].astype(int)
+n = 16
+df_selected = df.iloc[:, list(range(n)) + [-1]]
+df_selected = df_selected.drop('map', axis=1)
+df_selected.head(5)
+```
+
+4. Scaling
+```{python}
+#| output: false
+X = df_selected.drop(['round_winner', 'bomb_planted'], axis=1)
+Y = df_selected['round_winner']
+
+num_rows, num_cols = 4, 4  # Specify the grid size
+fig, axs = plt.subplots(num_rows, num_cols, figsize=(10, 8))  # Adjust figsize as needed
+fig.tight_layout(pad=5.0)  # Adds padding between plots
+
+# Iterate over the DataFrame columns and plot
+for i, col in enumerate(X.columns):
+    row = i // num_cols
+    col_index = i % num_cols
+    axs[row, col_index].hist(X[col])
+    axs[row, col_index].set_title(col)
+
+# Hide the empty subplots
+for i in range(len(X.columns), num_rows * num_cols):
+    axs[i // num_cols, i % num_cols].axis('off')
+
+plt.savefig("all_data.png")
+plt.show()
+
+correlation_matrix = X.corr()
+plt.figure(figsize=(10, 8))
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', linewidths=.5)
+plt.savefig('corr.png')
+plt.show()
+
+from sklearn.preprocessing import StandardScaler
+std = StandardScaler()
+std.fit(X)
+X = pd.DataFrame(std.transform(X), columns=X.columns)
+X['bomb_planted'] = df_selected['bomb_planted']
+X.shape
+```
+
+5. Splitting
+```{python}
+#| output: false
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=8964)
+```
+
+6. PCA
+```{python}
+#| output: false
+from sklearn.decomposition import PCA
+
+pca_X = PCA()
+
+X_pca = pd.DataFrame(pca_X.fit_transform(X), columns=X.columns, index=X.index)
+X_pca
+
+#Train/test for decision trees
+X_train_p, X_test_p, Y_train_p, Y_test_p = train_test_split(X_pca, Y, test_size=0.3, random_state=8964)
+```
+
+7. Random Forest
+```{python}
+#| output: false
+rf = RandomForestClassifier(n_estimators=100, random_state=8964, max_depth=10, min_samples_split=8)  # For classification
+rf.fit(X_train_p, Y_train_p)
+Y_pred = rf.predict(X_test_p)
+
+# For classification
+accuracy = accuracy_score(Y_test_p, Y_pred)
+accuracy
+
+# from sklearn.model_selection import GridSearchCV
+# rf = RandomForestClassifier(random_state=8964)
+# param_grid = {
+#     'min_samples_split': [2, 4, 6, 8, 10]  # You can choose a range of values to test
+# }
+# grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=5, scoring='accuracy')
+# grid_search.fit(X_train_p, Y_train_p)
+# print(f"Best Parameter: {grid_search.best_params_}")
+# print(f"Best Score: {grid_search.best_score_}")
+
+Y_pred_1 = rf.predict(X_train_p)
+accuracy = accuracy_score(Y_train_p, Y_pred_1)
+accuracy
+
+plt.barh(X_train.columns,rf.feature_importances_)
+plt.savefig('feature.png')
+
+from sklearn.metrics import f1_score
+
+f1 = f1_score(Y_test_p, Y_pred, average='binary')
+
+print("F1 Score:", f1)
+```
+
+8. DNN
+```{python}
+#| output: false
+from tensorflow import keras
+
+# Set model parameters
+n_layers = 4
+n_nodes = 300
+regularized = False
+dropout = True
+epochs = 50
+
+# Make a Keras DNN model
+model = keras.models.Sequential()
+model.add(keras.layers.BatchNormalization())
+for n in range(n_layers):
+    if regularized:
+        model.add(keras.layers.Dense(n_nodes, kernel_initializer="he_normal",
+         kernel_regularizer=keras.regularizers.l1(0.01), use_bias=False))
+    else:
+        model.add(keras.layers.Dense(n_nodes,
+         kernel_initializer="he_normal", use_bias=False))
+    model.add(keras.layers.BatchNormalization())
+    model.add(keras.layers.Activation("elu"))
+    if dropout:
+        model.add(keras.layers.Dropout(rate=0.2))
+model.add(keras.layers.Dense(1, activation="sigmoid"))
+model.compile(loss='binary_crossentropy', optimizer='Nadam', metrics=['accuracy'])
+
+# Make a callback that reduces LR on plateau
+reduce_lr_cb = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2,
+                                                 patience=5, min_lr=0.001)
+
+# Make a callback for early stopping
+early_stopping_cb = keras.callbacks.EarlyStopping(patience=5)
+
+# Train DNN.
+history = model.fit(np.array(X_train), np.array(Y_train), epochs=epochs,
+     validation_data=(np.array(X_test), np.array(Y_test)),
+      callbacks=[reduce_lr_cb, early_stopping_cb], batch_size=128)
+```
+
+```{python}
+#| output: false
+model.summary()
+model.evaluate(X_test, Y_test)
+
+predictions = model.predict(np.array(X_test))
+predicted_labels = (predictions > 0.5).astype(int)
+
+f1 = f1_score(Y_test, predicted_labels, average='binary')
+
+print("F1 Score:", f1)
+```
+
 
 \newpage
 
