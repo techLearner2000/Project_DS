@@ -81,7 +81,7 @@ Deriving from grid searching, we have that the best parameter for `min_samples_s
   \hline
   & \textbf{Random Forest} & \textbf{DNN} \\ \hline
   \textbf{Accuracy for Test Set} & 0.764 & 0.752 \\ \hline
-  \textbf{Accuracy for Train Set} & 0.791 & 0.453 \\ \hline
+  \textbf{Accuracy for Training Set} & 0.791 & 0.453 \\ \hline
   \end{tabular}
   \caption{Accuracies for both models}
   \label{t}
