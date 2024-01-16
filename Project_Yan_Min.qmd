@@ -1,7 +1,7 @@
 ---
 title: Predicting the Winner in CS:GO Matches
 subtitle: "(STATS/CSE 780 course project)"
-author: "Yan Min (Student number: 400546093)"
+author: "Yan Min"
 date: today
 format: pdf
 editor: visual

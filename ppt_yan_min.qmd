@@ -1,7 +1,7 @@
 ---
 title: Predicting the winner in CS:GO matches
 subtitle: "(STATS/CSE 780 course project)"
-author: Yan Min  \hspace{5in} Department of Electrical and Computer Engineering \hspace{5in} McMaster University \hspace{5in}400546093
+author: Yan Min  \hspace{5in} Department of Electrical and Computer Engineering \hspace{5in} McMaster University \hspace{5in}
 date: "2023/12/05"
 format: beamer
 editor: visual
